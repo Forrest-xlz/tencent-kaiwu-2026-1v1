@@ -204,6 +204,8 @@ Four implemented terms currently have **zero weight**: `monster_first_hit`, `rag
 
 My competition training process used a staged approach: **first make useful skills learnable, then reduce auxiliary reward weights once the policy has acquired them**. The aim was to retain the learned repertoire while moving the optimization emphasis toward the final match outcome. An ambush, a tower counterattack, or a skill combination is valuable because it helps win the game, rather than because it repeatedly triggers an auxiliary bonus.
 
+Experiments showed that **the model retained the corresponding tactical skills even after their reward weights were reduced to zero or close to zero later in training**. Its actual match win rate also improved relative to the stage before the reduction. This supports using tactical rewards to teach reusable skills, then reducing their influence as the policy shifts toward winning the match.
+
 The code supports episode-based linear interpolation of selected reward weights. **In the retained snapshot, reward-weight scheduling is disabled and its schedule dictionary is empty.** The fixed weights above describe the saved configuration; they do not reconstruct the complete sequence of curriculum adjustments used during competition training.
 
 This cross-episode curriculum is distinct from the active **within-game time decay**:

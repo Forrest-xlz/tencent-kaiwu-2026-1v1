@@ -180,6 +180,33 @@ These are the weights in the retained configuration. A weight multiplies an unde
 
 The negative `kill` weight should be read together with `death`: an ordinary solo kill contributes **$-0.5+0.8=+0.3$** from these two terms, before time decay and other rewards.
 
+At a normal terminal state, the workflow adds **$+2.5$ for a win or $-2.5$ for a loss**, using the remaining tower health to identify the winning side. Tied tower health gives zero, and truncations receive no terminal win/loss reward. This term is added after dense-reward decay. It is an internal training reward; the official evaluation awards wins according to the competition rules above.
+
+### Within-Game Reward Decay
+
+Inspired by the **game-time weighting** in [OpenAI et al., *Dota 2 with Large Scale Deep Reinforcement Learning*](https://arxiv.org/abs/1912.06680) (Appendix G), I reduce dense rewards as a match progresses. The motivation is that **the same 100 gold is more valuable early in the game than late in the game**: an early advantage can lead to earlier equipment, stronger trades, better resource control, and further advantages over the remaining match.
+
+The retained implementation uses the following game-time factor:
+
+$$
+d(f_t)=0.6^{f_t/8000},\qquad
+r_t^{\mathrm{dense}}=d(f_t)\sum_i w_i r_{i,t},
+$$
+
+where $f_t$ is the current game frame. The decay base is 0.6 and the time scale is **8000 game frames** in this project. As the match progresses, the same underlying reward contributes less to the training objective.
+
+For example, with the `money` weight of 0.008, a **+100 increase in the gold advantage** has an unscaled contribution of $100\times0.008=0.8$. Holding the other reward components fixed:
+
+| Game frame $f_t$ | Decay factor $d(f_t)$ | Contribution from the same +100 gold advantage |
+| --- | ---: | ---: |
+| 0 (start-of-game reference) | 1.00 | 0.800 |
+| 8000 | 0.60 | 0.480 |
+| 16000 | 0.36 | 0.288 |
+
+These values illustrate the reward formula, rather than measured game outcomes. The factor scales all dense components, including penalties; **the terminal win/loss reward is added afterward and retains its full value**.
+
+Within-game decay depends on elapsed match time. PPO's discount factor $\gamma$ instead discounts future transitions, while the tactical reward curriculum changes selected coefficients across training episodes. Here, within-game decay is active with a fixed scale of 8000 frames; cross-episode scheduling of that scale is disabled.
+
 ### Learning a Broader Tactical Repertoire
 
 I used tactical shaping to make ambushes, tower-assisted retaliation, ultimate follow-ups, and selective summoner-skill use easier to discover. These give Di Renjie alternatives to indiscriminate retreat.
@@ -207,16 +234,6 @@ My competition training process used a staged approach: **first make useful skil
 Experiments showed that **the model retained the corresponding tactical skills even after their reward weights were reduced to zero or close to zero later in training**. Its actual match win rate also improved relative to the stage before the reduction. This supports using tactical rewards to teach reusable skills, then reducing their influence as the policy shifts toward winning the match.
 
 The code supports episode-based linear interpolation of selected reward weights. **In the retained snapshot, reward-weight scheduling is disabled and its schedule dictionary is empty.** The fixed weights above describe the saved configuration; they do not reconstruct the complete sequence of curriculum adjustments used during competition training.
-
-This cross-episode curriculum is distinct from the active **within-game time decay**:
-
-$$
-r_t^{\mathrm{dense}}=0.6^{f_t/8000}\sum_i w_i r_{i,t},
-$$
-
-where $f_t$ is the game frame number. Earlier economic and combat advantages receive more weight through this factor. The time-scale scheduling option is also disabled in the retained configuration.
-
-At a normal terminal state, the workflow adds **$+2.5$ for a win or $-2.5$ for a loss**, using the remaining tower health to identify the winning side. Tied tower health gives zero, and truncations receive no terminal win/loss reward. This term is added after dense-reward decay. It is an internal training reward; the official evaluation awards wins according to the competition rules above.
 
 Source: [`reward_process.py`](agent_ppo/feature/reward_process.py), [`GameConfig`](agent_ppo/conf/conf.py), [`train_workflow.py`](agent_ppo/workflow/train_workflow.py).
 
@@ -322,5 +339,6 @@ The learning-speed discussion reflects my competition training experience. The d
 
 - [Tencent Kaiwu — Honor of Kings 1v1 competition guide, version 61.1.4](https://tencentarena.com/docs/p-competition-hok1v1/61.1.4/guidebook/dev-guide/intro/).
 - Ye et al. [Mastering Complex Control in MOBA Games with Deep Reinforcement Learning](https://arxiv.org/abs/1912.09729), AAAI 2020.
+- OpenAI et al. [Dota 2 with Large Scale Deep Reinforcement Learning](https://arxiv.org/abs/1912.06680), 2019.
 - Schulman et al. [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347), 2017.
 - Schulman et al. [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438), ICLR 2016.

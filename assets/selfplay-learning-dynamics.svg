@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Unequal learning speed and the escape-only self-play trap</title>
+  <desc id="desc">A conceptual, non-empirical chart. Luban improves quickly early in training. Direnjie develops more slowly. A dashed path shows the escape-only local optimum; a rising green path illustrates the intended effect of retaining useful combat experience. Neither axis contains measured values.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#64748b"/></marker>
+    <linearGradient id="gap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef3c7" stop-opacity="0.85"/><stop offset="1" stop-color="#fef3c7" stop-opacity="0.25"/></linearGradient>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #1e293b; }
+      .small { font-size: 17px; fill: #64748b; }
+      .label { font-size: 19px; }
+      .curve { fill: none; stroke-width: 5; stroke-linecap: round; }
+    </style>
+  </defs>
+  <rect width="1200" height="650" rx="18" fill="#f8fafc"/>
+  <text x="48" y="51" font-size="28" font-weight="700">Unequal learning speed can trap self-play</text>
+  <text x="48" y="82" class="small">Conceptual illustration of the training experience · not measured Elo, win rate, or learning curves</text>
+  <rect x="110" y="116" width="1040" height="362" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <path d="M150 439 C215 350 260 245 375 194 C475 151 600 141 725 135 L725 354 C655 393 583 409 500 420 C375 441 255 452 150 451 Z" fill="url(#gap)"/>
+  <path d="M110 228 H1150 M110 348 H1150" stroke="#e2e8f0" stroke-dasharray="4 7"/>
+  <path d="M110 478 H1152" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M110 478 V118" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="47" y="298" font-size="17" fill="#475569" text-anchor="middle" transform="rotate(-90 47 298)">Effective policy strength (schematic)</text>
+  <path d="M150 439 C215 350 260 245 375 194 C475 151 600 141 725 135 C860 129 1010 127 1110 126" class="curve" stroke="#2563eb"/>
+  <path d="M150 451 C255 452 375 441 500 420 C583 409 655 393 725 354 C850 287 916 191 1110 153" class="curve" stroke="#0f766e"/>
+  <path d="M150 451 C280 452 390 436 500 420 C640 413 845 417 1110 421" class="curve" stroke="#c8752d" stroke-dasharray="9 9"/>
+  <text x="450" y="258" font-size="22" font-weight="700" fill="#92400e">Early / middle imbalance</text>
+  <text x="450" y="287" font-size="18" fill="#92400e">Useful combat states become scarce</text>
+  <rect x="783" y="313" width="315" height="63" rx="10" fill="#f0fdfa" stroke="#99d5cb"/>
+  <text x="800" y="339" font-size="18" fill="#115e59">Retain useful combat experience</text>
+  <text x="800" y="363" font-size="17" fill="#115e59">and broaden the tactical repertoire</text>
+  <path d="M868 313 L876 263" fill="none" stroke="#64748b" stroke-width="1.7" marker-end="url(#arrow)"/>
+  <text x="257" y="508" class="small" text-anchor="middle">Early</text>
+  <text x="622" y="508" class="small" text-anchor="middle">Middle</text>
+  <text x="1015" y="508" class="small" text-anchor="middle">Later</text>
+  <text x="622" y="541" font-size="19" fill="#475569" text-anchor="middle">Training progress</text>
+  <path d="M52 581 H89" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+  <text x="101" y="587" class="label">Luban: fast early learning</text>
+  <path d="M428 581 H465" stroke="#0f766e" stroke-width="5" stroke-linecap="round"/>
+  <text x="477" y="587" class="label">Direnjie: intended learning path</text>
+  <path d="M52 617 H89" stroke="#c8752d" stroke-width="5" stroke-dasharray="8 7" stroke-linecap="round"/>
+  <text x="101" y="623" class="label">Direnjie: escape-only failure mode</text>
+  <text x="690" y="623" class="small">Curve shapes and recovery are illustrative.</text>
+</svg>
